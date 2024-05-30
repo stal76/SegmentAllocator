@@ -1,2 +1,7 @@
-demo_allocator
-test_allocator
+demo_log
+demo_segment
+test_log
+test_segment
+.vscode/
+doc/
+

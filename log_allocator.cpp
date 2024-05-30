@@ -1,4 +1,4 @@
-#include "segment_allocator.h"
+#include "log_allocator.h"
 #include <iostream>
 
 SegmentAllocator::SegmentAllocator(size_t start, size_t size, size_t error_result) : error_result_(error_result) {
