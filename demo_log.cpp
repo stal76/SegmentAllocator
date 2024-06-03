@@ -17,7 +17,7 @@ struct Free {
 
 using Action = std::variant<Allocation, Free>;
 
-void PrintSegments(SegmentAllocator& allocator) {
+void PrintSegments(LogAllocator& allocator) {
 	const auto& segments = allocator.DebugSegmentsStart();
 	if (!segments.empty()) {
 		for (auto [start, size] : segments) {
@@ -30,7 +30,7 @@ void PrintSegments(SegmentAllocator& allocator) {
 	std::cout << "\n";
 }
 
-void OneTestActions(const std::string& test_name, SegmentAllocator& allocator, const std::vector<Action>& actions) {
+void OneTestActions(const std::string& test_name, LogAllocator& allocator, const std::vector<Action>& actions) {
 	std::cout << "-----------------------------------------------------------------\n";
 	std::cout << "Test " << test_name << ": ";
 	PrintSegments(allocator);
@@ -49,7 +49,7 @@ void OneTestActions(const std::string& test_name, SegmentAllocator& allocator, c
 }
 
 void FixedTest() {
-	SegmentAllocator allocator(0, 100, 0);
+	LogAllocator allocator(0, 100, 0);
 
 	std::vector<Action> actions;
 	actions.push_back(Allocation{20});

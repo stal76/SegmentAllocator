@@ -3,10 +3,10 @@
 #include <cstddef>
 #include <set>
 
-class SegmentAllocator
+class LogAllocator
 {
 public:
-	SegmentAllocator(size_t start, size_t size, size_t error_result);
+	LogAllocator(size_t start, size_t size, size_t error_result);
 	size_t Allocate(size_t size);
 	bool Free(size_t start, size_t size);
 

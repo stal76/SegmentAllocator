@@ -19,7 +19,7 @@ std::ostream& operator<<(std::ostream& out_stream, const Segments& segments) {
 	return out_stream;
 }
 
-Segments GetSegments(const SegmentAllocator& allocator) {
+Segments GetSegments(const LogAllocator& allocator) {
 	auto segments_start = allocator.DebugSegmentsStart();
 	auto segments_size = allocator.DebugSegmentsSize();
 	if (segments_start.size() != segments_size.size()) {
@@ -41,8 +41,8 @@ Segments GetSegments(const SegmentAllocator& allocator) {
 
 static size_t error_result = 9999;
 
-SegmentAllocator Start() {
-	SegmentAllocator allocator(0, 100, error_result);
+LogAllocator Start() {
+	LogAllocator allocator(0, 100, error_result);
 	
 	EXPECT_EQ(allocator.Allocate(20), 0);
 	EXPECT_EQ(allocator.Allocate(30), 20);
@@ -61,7 +61,7 @@ SegmentAllocator Start() {
 }
 
 TEST(LogAllocator, Simple) {
-	SegmentAllocator allocator = Start();
+	LogAllocator allocator = Start();
 	
 	EXPECT_EQ(allocator.Allocate(3), 52);
 	EXPECT_EQ(allocator.Allocate(3), 55);
@@ -83,7 +83,7 @@ TEST(LogAllocator, Simple) {
 }
 
 TEST(LogAllocator, Errors) {
-	SegmentAllocator allocator = Start();
+	LogAllocator allocator = Start();
 
 	EXPECT_EQ(allocator.Allocate(11), error_result);
 

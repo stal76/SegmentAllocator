@@ -9,26 +9,29 @@
 \usepackage{graphicx}
 \begin{document}
 	
-	{\Huge "Slab" Allocator}
+	{\Huge Segment Allocator}
 	
 	\section{Введение}
 	
 	\begin{itemize}
-		\item Есть диапазон ячеек $\textsf{TotalSize}$ (например, $8\cdot1024^2 $). В этом диапазоне
+		\item Есть диапазон ячеек $[ \textsf{IndexBegin}, \textsf{IndexEnd}) $, 
+		$\textsf{TotalSize} = \textsf{IndexEnd} - \textsf{IndexBegin} $. 
+		В этом диапазоне
 		требуется уметь выделять непрерывные сегменты ячеек и позже освобождать их. При этом размер
 		$\textsf{Size}$ сегмента не более $\textsf{MaxBufferSize}$.
 		
 		\item Хотим это делать за О(1).
 		
 		\item Весь диапазон ячеек разбивается на блоки размера $\textsf{BlockSize}$ для выделения сегментов
-		фиксированного размера.
+		фиксированного размера. Размер последнего блока может быть меньше, но должен быть не меньше 
+		$\textsf{MaxBufferSize}$.
 		
 		\item Должны выполняться следующие ограничения:
 			\begin{itemize}
 				\item $\textsf{MaxBufferSize} \in \left[ 1,\ldots ,\textsf{64}\right] $.
 				\item $\textsf{BlockSize}$ \% $64 = 0$.
 				\item $\textsf{BlockSize} \leq 64^2 = 4096.$
-				\item $\textsf{TotalSize}$ \% $\textsf{BlockSize} = 0$.
+				\item $\textsf{TotalSize}$ \% $\textsf{BlockSize} \notin [1,\cdots,\textsf{MaxBufferSize}-1]$.
 		
 			\end{itemize}
 		
@@ -102,7 +105,7 @@
 		\item В блоке ищем первую доступную группу, в ней первый свободный сегмент. Возвращаем
 		индекс первой ячейки сегмента:
 		$$ \textsf{cell\_index} = \textsf{block\_index} \cdot \textsf{BlockSize} + 
-		\textsf{segment\_index} \cdot \textsf{Size} $$
+		\textsf{segment\_index} \cdot \textsf{Size} + \textsf{IndexBegin} $$
 	
 	\end{itemize}
 
@@ -113,9 +116,9 @@
 		они не выходят за допустимые границы.
 		
 		\item По индексу ячейки определяем индекс блока и индекс сегмента:
-		$$ \textsf{block\_index} = \lfloor \frac{\textsf{cell\_index}}{\textsf{BlockSize}} \rfloor$$
+		$$ \textsf{block\_index} = \lfloor \frac{\textsf{cell\_index} - \textsf{IndexBegin}}{\textsf{BlockSize}} \rfloor$$
 		$$ \textsf{segment\_index} = \frac
-			{\textsf{cell\_index} - \textsf{BlockSize} \cdot \textsf{block\_index}}{Size} $$
+			{\textsf{cell\_index} - \textsf{BlockSize} \cdot \textsf{block\_index} - \textsf{IndexBegin}}{Size} $$
 		
 		\item Делаем следующие проверки:
 			\begin{itemize}

@@ -1,11 +1,11 @@
 #include "log_allocator.h"
 #include <iostream>
 
-SegmentAllocator::SegmentAllocator(size_t start, size_t size, size_t error_result) : error_result_(error_result) {
+LogAllocator::LogAllocator(size_t start, size_t size, size_t error_result) : error_result_(error_result) {
 	Insert(start, size);
 }
 
-size_t SegmentAllocator::Allocate(size_t size) {
+size_t LogAllocator::Allocate(size_t size) {
 	auto iter = segments_size_.lower_bound({size, 0});
 	if (iter == segments_size_.end()) {
 		return error_result_;
@@ -22,7 +22,7 @@ size_t SegmentAllocator::Allocate(size_t size) {
 	return index;
 }
 
-bool SegmentAllocator::Free(size_t start, size_t size)
+bool LogAllocator::Free(size_t start, size_t size)
 {
 	auto iter_right = segments_start_.upper_bound({start, 0});
 	auto iter_left = (iter_right == segments_start_.begin() ? segments_start_.end() : std::prev(iter_right)); // если тот что справа самый первый, то левее уже никого
@@ -50,15 +50,15 @@ bool SegmentAllocator::Free(size_t start, size_t size)
 	return true;
 }
 
-void SegmentAllocator::Insert(size_t start, size_t size) {
+void LogAllocator::Insert(size_t start, size_t size) {
 	segments_start_.insert({start, size});
 	segments_size_.insert({size, start});	
 }
 
-const std::set<std::pair<size_t, size_t>>& SegmentAllocator::DebugSegmentsStart() const {
+const std::set<std::pair<size_t, size_t>>& LogAllocator::DebugSegmentsStart() const {
 	return segments_start_;
 }
 
-const std::set<std::pair<size_t, size_t>>& SegmentAllocator::DebugSegmentsSize() const {
+const std::set<std::pair<size_t, size_t>>& LogAllocator::DebugSegmentsSize() const {
 	return segments_size_;
 }
